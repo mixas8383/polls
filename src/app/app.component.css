@@ -1,0 +1,24 @@
+.my_click_button
+{
+    color: brown;
+}
+
+
+.mat-column-star mat-icon
+{
+    cursor: pointer;
+}
+
+.mat-column-star mat-icon:hover
+{
+    color: darkgreen;
+}
+.example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+   
+  .example-full-width {
+    width: 100%;
+  }

@@ -1,0 +1,251 @@
+<h2 mat-dialog-title>
+  Edit Primaries</h2>
+<mat-dialog-content class="mat-typography">
+  <div *ngIf="displayEdit">
+
+    <form class="example-container" [formGroup]="options">
+
+      <mat-tab-group>
+        <mat-tab label="Main options">
+          <h3 mat-subheader>Main Options</h3>
+
+          <mat-list role="list">
+            <mat-list-item role="listitem">
+              <mat-form-field>
+                <input matInput type="test" placeholder="Title" formControlName="title" min="10">
+              </mat-form-field>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+            <mat-list-item role="listitem">
+              <mat-form-field>
+                <input matInput type="test" placeholder="Admin Title" formControlName="admin_title" min="10">
+              </mat-form-field>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+            <mat-list-item role="listitem">
+              <mat-slide-toggle [color]="'primary'" [labelPosition]="'before'" formControlName="restrict_user">Restrict User Id</mat-slide-toggle>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+            <mat-list-item role="listitem">
+              <mat-slide-toggle [color]="'primary'" [labelPosition]="'before'" formControlName="restrict_ip">Restrict IP</mat-slide-toggle>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+            <mat-list-item role="listitem">
+              <mat-form-field *ngIf="options.controls.restrict_ip.value">
+                <input matInput type="number" placeholder="Restrict count" formControlName="restrict_user" min="10">
+              </mat-form-field>
+            </mat-list-item>
+
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+            <mat-list-item role="listitem">
+              <mat-form-field>
+                <input matInput [matDatepicker]="start_date" placeholder="Start Date" formControlName="start_date" />
+                <mat-datepicker-toggle matSuffix [for]="start_date"></mat-datepicker-toggle>
+                <mat-datepicker #start_date></mat-datepicker>
+              </mat-form-field>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+            <mat-list-item role="listitem">
+              <mat-form-field>
+                <input matInput [matDatepicker]="end_date" placeholder="Start Date" formControlName="end_date" />
+                <mat-datepicker-toggle matSuffix [for]="end_date"></mat-datepicker-toggle>
+                <mat-datepicker #end_date></mat-datepicker>
+              </mat-form-field>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+            <mat-list-item role="listitem">
+              <button mat-raised-button (click)="submitForm()" color="primary">Save</button>
+            </mat-list-item>
+            <mat-divider style="padding-bottom: 15px"></mat-divider>
+
+          </mat-list>
+        </mat-tab>
+
+        <mat-tab label="Locales">
+
+
+          <h3 mat-subheader>Locales</h3>
+          <div *ngFor="let formGPlocale of pollLocale.controls">
+            <div [formGroup]="formGPlocale">
+              <mat-list role="list">
+                <h2 *ngIf="formGPlocale.value.locale_code" mat-header>Fields for locale "{{formGPlocale.value.locale_code}}"</h2>
+                <mat-divider style="margin-bottom: 20px"></mat-divider>
+
+                <mat-list-item role="listitem">
+                  <p style="margin-left: 5px">
+                    <mat-form-field>
+                      <input matInput type="test" placeholder="Title" formControlName="title" min="10" />
+                    </mat-form-field>
+                  </p>
+
+                  <p style="margin-left: 10px">
+                    <mat-form-field>
+                      <mat-select placeholder="Locale" formControlName="locale_code">
+                        <mat-option>--</mat-option>
+                        <mat-option *ngFor="let loc of localeCodes" [value]="loc">
+                          {{loc}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </p>
+                </mat-list-item>
+
+
+
+                <div style="margin-left: 10px">
+                  <mat-form-field class="example-full-width" style="width: 500px;">
+                    <textarea matInput placeholder="Description" formControlName="description" min="10"></textarea>
+                  </mat-form-field>
+                </div>
+
+
+
+
+              </mat-list>
+              <mat-divider style="padding-bottom: 15px"></mat-divider>
+            </div>
+          </div>
+          <button mat-raised-button (click)="addPollLocale()" color="primary">Add new locale</button>
+        </mat-tab>
+
+        <mat-tab label="Coins">
+
+
+          <div *ngIf="!displayCoinEdit">
+            <h3 mat-subheader>Coins</h3>
+            <table class="mat-elevation-z8 mat-table" style="width: 100%">
+              <tr class="mat-header-row ng-star-inserted">
+                <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Short title</th>
+                <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Market cap</th>
+                <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Current price</th>
+                <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Ordering</th>
+                <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Edit</th>
+              </tr>
+              <tr class="mat-row ng-star-inserted" *ngFor="let coin of coins;index as i;">
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.short_title}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.market_cap}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.current_price}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.ordering}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">
+                  <mat-icon (click)="editCoin(i)">edit {{i}}</mat-icon>
+                </td>
+              </tr>
+
+            </table>
+          </div>
+          <div *ngIf="displayCoinEdit">
+            <h3 mat-subheader>Edit Coins</h3>
+            <div [formGroup]="currentEditCoin">
+              <p>
+                <mat-form-field>
+                  <input matInput type="test" placeholder="Short Title" formControlName="short_title" min="10" />
+                </mat-form-field>
+                <mat-divider style="padding-bottom: 15px"></mat-divider>
+              </p>
+              <p>
+                <mat-form-field>
+                  <input matInput type="test" placeholder="Market Cap" formControlName="market_cap" min="10" />
+                </mat-form-field>
+                <mat-divider style="padding-bottom:15px"></mat-divider>
+              </p>
+              <p>
+                <mat-form-field>
+                  <input matInput type="test" placeholder="Current Price" formControlName="current_price" min="10" />
+                </mat-form-field>
+                <mat-divider style="padding-bottom: 15px"></mat-divider>
+              </p>
+
+              <p>
+                <mat-form-field>
+                  <input matInput type="test" placeholder="Ordering" formControlName="ordering" min="10" />
+                </mat-form-field>
+                <mat-divider style="padding-bottom: 15px"></mat-divider>
+              </p>
+            </div>
+
+            <h3 mat-header>Locales</h3>
+            <div *ngFor="let formCoinlocale of pollCoinslocails.controls">
+              <div [formGroup]="formCoinlocale">
+                <h3 *ngIf="formCoinlocale.value.locale_code" mat-header>Fields for locale "{{formCoinlocale.value.locale_code}}"</h3>
+                <p>
+                  <mat-form-field>
+                    <input matInput type="test" placeholder="Title" formControlName="title" min="10" />
+                  </mat-form-field>
+
+                  <mat-form-field style="margin-left: 20px">
+                    <mat-select placeholder="Locale" formControlName="locale_code">
+                      <mat-option>--</mat-option>
+                      <mat-option *ngFor="let loc of localeCodes" [value]="loc">
+                        {{loc}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+
+                </p>
+                <div style="margin-left: 10px">
+                  <mat-form-field class="example-full-width" style="width: 500px;">
+                    <textarea matInput placeholder="Description" formControlName="description" min="10"></textarea>
+                  </mat-form-field>
+                </div>
+
+
+              </div>
+              <mat-divider style="padding-bottom: 15px"></mat-divider>
+            </div>
+            <button mat-raised-button color="primary" (click)="addCoinLocale()">Add New Locale</button>
+            <button style="margin-left: 15px" mat-raised-button color="primary" (click)="displayCoinEdit=false;">Back to locale list</button>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </form>
+  </div>
+
+  <table *ngIf="!displayEdit" mat-table [dataSource]="polls" matSort class="mat-elevation-z8">
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> No. </th>
+      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> description </th>
+      <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="admin_title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> admin_title </th>
+      <td mat-cell *matCellDef="let element"> {{element.admin_title}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="star" stickyEnd>
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element;let index = index">
+        <mat-icon (click)="editPoll(index)">edit {{index}}</mat-icon>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row [ngClass]="['header_blue']" *matHeaderRowDef="displayedColumnsNew"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsNew;"></tr>
+  </table>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+</mat-dialog-actions>
