@@ -2,7 +2,7 @@ import { FormArray } from "@angular/forms";
 
 export class Poll {
     id: number;
-    admin_title:string;
+    admin_title:string; 
     title: string;
     restrict_user:boolean;
     restrict_ip:boolean;
@@ -24,6 +24,22 @@ export class Poll {
     poll_id:number;
     description:string;
     locale_code:string;
+  }
+  export class PollCoin
+  {
+    id:number;
+    short_title:string;
+    market_cap:string;
+    current_price:string;
+    ordering:number;
+    poll_id:number;
+  }
+  export class CoinLocale
+  {
+    id:number;
+    title:string;
+    coin_id:number;
+    description:string;
+    locale_code:string;
 
-    
   }

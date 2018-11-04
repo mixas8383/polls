@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material';
 import { PollService } from './poll.service';
-import { Poll, PollLocale } from './poll';
+import { Poll, PollLocale, CoinLocale, PollCoin } from './poll';
 import { DataSource } from '@angular/cdk/collections';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
@@ -116,9 +116,9 @@ export class DialogOverviewExampleDialog {
   get pollCoins() {
     return this.options.get('coinsFormgroup') as FormArray;
   }
-get pollCoinslocails() {
+  get pollCoinslocails() {
 
-    return this.currentEditCoin.get('localesFormGroup') as FormArray; 
+    return this.currentEditCoin.get('localesFormGroup') as FormArray;
   }
   editPoll(element) {
     this.editPollIndex = element;
@@ -141,8 +141,6 @@ get pollCoinslocails() {
 
     if (Array.isArray(this.polls[element].coins)) {
       for (let one of this.polls[element].coins) {
-
-
         if (one.locales) // generate locailsFormArray for coin
         {
           let tempCoinLocales = []
@@ -154,7 +152,7 @@ get pollCoinslocails() {
           } else {
             tempCoinLocales.push(this.fb.group(one.locales));
           }
-          one.localesFormGroup = new FormArray( tempCoinLocales);
+          one.localesFormGroup = new FormArray(tempCoinLocales);
         }
         coinsData.push(this.fb.group(one));
       }
@@ -174,8 +172,9 @@ get pollCoinslocails() {
   }
 
   submitForm() {
-    console.log(this.options)
+    //console.log(this.options)
     console.log((this.options.value))
+    this.setPolls(this.options.value);
   }
 
 
@@ -185,6 +184,13 @@ get pollCoinslocails() {
       console.log(this.polls)
     });
   }
+ setPolls(data) {
+    this.pollService.setPolls(data).subscribe(polls => {
+      this.polls = polls;
+      console.log(this.polls)
+    });
+  }
+
   addPollLocale() {
     let locale = new PollLocale;
     let formGroup: FormGroup = new FormGroup({
@@ -193,20 +199,46 @@ get pollCoinslocails() {
       description: new FormControl(locale.description),
     });
 
-    console.log(new PollLocale)
     this.pollLocale.push(formGroup)
   }
 
   addCoinLocale() {
-    let locale = new PollLocale;
+    let locale = new CoinLocale;
     let formGroup: FormGroup = new FormGroup({
+      id: new FormControl(locale.id),
       title: new FormControl(locale.title),
+      coin_id: new FormControl(locale.coin_id),
+      locale_code: new FormControl(locale.locale_code),
+      description: new FormControl(locale.description),
+    });
+    this.pollCoinslocails.push(formGroup)
+  }
+
+
+  addCoin() {
+    let coin = new PollCoin;
+
+    let locale = new CoinLocale;
+    let formGroupl: FormGroup = new FormGroup({
+      id: new FormControl(locale.id),
+      title: new FormControl(locale.title),
+      coin_id: new FormControl(locale.coin_id),
       locale_code: new FormControl(locale.locale_code),
       description: new FormControl(locale.description),
     });
 
-    console.log(new PollLocale)
-    this.pollCoinslocails.push(formGroup)
+    let formGroup: FormGroup = new FormGroup({
+      id: new FormControl(coin.id),
+      short_title: new FormControl(coin.short_title),
+      poll_id: new FormControl(coin.poll_id),
+      market_cap: new FormControl(coin.market_cap),
+      ordering: new FormControl(coin.ordering),
+      current_price: new FormControl(coin.current_price),
+      localesFormGroup:new FormArray([formGroupl]),
+    });
+
+    this.pollCoins.push(formGroup)
+
   }
 
   onNoClick(): void {
@@ -215,13 +247,8 @@ get pollCoinslocails() {
 
   editCoin(index) {
     this.displayCoinEdit = true;
-    let tempFormgroup = {
-      short_title: new FormControl(this.coins[index].short_title),
-      market_cap: new FormControl(this.coins[index].market_cap),
-      current_price: new FormControl(this.coins[index].current_price),
-    };
 
-    console.log(this.pollCoins.controls[index]);
+    console.log(this.pollCoins.controls[index])
     this.currentEditCoin = this.pollCoins.controls[index];
     console.log(this.currentEditCoin);
   }

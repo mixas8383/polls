@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Poll } from './poll';
-import { MessageService } from './message.service'; 
+import { MessageService } from './message.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -14,17 +14,29 @@ const httpOptions = {
 @Injectable({ providedIn: 'root' })
 export class PollService {
 
-  private heroesUrl = 'https://admin.fortunejack.io/fjadmin/data/utils.php?act=get_poll_votes&page=coin_primaries&task=get_all_polls';  // URL to web api
+  // private heroesUrl = 'https://admin.fortunejack.io/fjadmin/data/utils.php?act=get_poll_votes&page=coin_primaries&task=get_all_polls';  // URL to web api
+
+  private heroesUrl = 'http://localhost/dashboard/get.php';  // URL to web api
+  private heroesUrlSet = 'http://localhost/dashboard/set.php';  // URL to web api
 
   constructor(
     private http: HttpClient,
     private messageService: MessageService) { }
 
   /** GET heroes from the server */
-  getPolls (): Observable<Poll[]> {
+  getPolls(): Observable<Poll[]> {
 
     console.log('service call');
     return this.http.get<Poll[]>(this.heroesUrl)
+      .pipe(
+        tap(_ => this.log('fetched heroes')),
+        catchError(this.handleError('getHeroes', []))
+      );
+  }
+  setPolls(data): Observable<Poll[]> {
+
+    console.log('service call');
+    return this.http.post<any>(this.heroesUrlSet, data)
       .pipe(
         tap(_ => this.log('fetched heroes')),
         catchError(this.handleError('getHeroes', []))
@@ -69,7 +81,7 @@ export class PollService {
   //////// Save methods //////////
 
   /** POST: add a new hero to the server */
-  addHero (hero: Poll): Observable<Poll> {
+  addHero(hero: Poll): Observable<Poll> {
     return this.http.post<Poll>(this.heroesUrl, hero, httpOptions).pipe(
       tap((hero: Poll) => this.log(`added hero w/ id=${hero.id}`)),
       catchError(this.handleError<Poll>('addHero'))
@@ -77,7 +89,7 @@ export class PollService {
   }
 
   /** DELETE: delete the hero from the server */
-  deleteHero (hero: Poll | number): Observable<Poll> {
+  deleteHero(hero: Poll | number): Observable<Poll> {
     const id = typeof hero === 'number' ? hero : hero.id;
     const url = `${this.heroesUrl}/${id}`;
 
@@ -88,7 +100,7 @@ export class PollService {
   }
 
   /** PUT: update the hero on the server */
-  updateHero (hero: Poll): Observable<any> {
+  updateHero(hero: Poll): Observable<any> {
     return this.http.put(this.heroesUrl, hero, httpOptions).pipe(
       tap(_ => this.log(`updated hero id=${hero.id}`)),
       catchError(this.handleError<any>('updateHero'))
@@ -101,7 +113,7 @@ export class PollService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure

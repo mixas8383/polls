@@ -35,7 +35,7 @@
 
             <mat-list-item role="listitem">
               <mat-form-field *ngIf="options.controls.restrict_ip.value">
-                <input matInput type="number" placeholder="Restrict count" formControlName="restrict_user" min="10">
+                <input matInput type="number" placeholder="Restrict count" formControlName="restrict_ip_limit" min="10">
               </mat-form-field>
             </mat-list-item>
 
@@ -127,17 +127,18 @@
                 <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Ordering</th>
                 <th class="mat-header-cell cdk-column-position mat-column-position ng-star-inserted">Edit</th>
               </tr>
-              <tr class="mat-row ng-star-inserted" *ngFor="let coin of coins;index as i;">
-                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.short_title}}</td>
-                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.market_cap}}</td>
-                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.current_price}}</td>
-                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.ordering}}</td>
+              <tr class="mat-row ng-star-inserted" *ngFor="let coin of pollCoins.controls;index as i;">
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.value.short_title}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.value.market_cap}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.value.current_price}}</td>
+                <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">{{coin.value.ordering}}</td>
                 <td class="mat-cell cdk-column-name mat-column-name ng-star-inserted">
                   <mat-icon (click)="editCoin(i)">edit {{i}}</mat-icon>
                 </td>
               </tr>
 
             </table>
+            <button mat-raised-button color="primary" (click)="addCoin()">Add New Locale</button>
           </div>
           <div *ngIf="displayCoinEdit">
             <h3 mat-subheader>Edit Coins</h3>
