@@ -1,4 +1,3 @@
-
 <?php
 
 /*
@@ -266,44 +265,18 @@ class DBPolls {
 
 
                 if (!empty($one->file)) {
-                    
-                    
+
+
                     $img = str_replace('data:image/png;base64,', '', $one->file);
                     $img = str_replace(' ', '+', $img);
                     $dataImage = base64_decode($img);
-                    
-                     if(isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] == 'Debug')
-                     {
-                         echo '<pre>'.__FILE__.' -->>| <b> Line </b>'.__LINE__.'</pre><pre>';
-                         print_r($dataImage);
-                         die;
-                         
-                     }
-                  
-                     
-                    
+
                     $im = imagecreatefromstring($dataImage);
-                  
-                    
                     $ext = 'png';
 
-                 
-
-
                     $fh = fopen('php://memory', 'rw');
-                    fwrite($fh, $im);
+                    fwrite($fh, $dataImage);
                     rewind($fh);
-
-                                        if ($im !== false) {
-                        header('Content-Type: image/png');
-                        imagepng($im);
-                        //imagedestroy($im);
-                    }die;
-                    
-                    
-                    
-                    
-
 
                     if (!empty($ext)) {
                         ini_set('display_errors', 1);
@@ -332,16 +305,9 @@ class DBPolls {
                         if (curl_errno($ch)) {
                             $err = curl_error($ch);
                         }
-                        if (isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] == 'Debug') {
-//    echo '<pre>'.__FILE__.' -->>| <b> Line </b>'.__LINE__.'</pre><pre>';
-//    print_r($err);
-                            echo '<pre>' . __FILE__ . ' -->>| <b> Line </b>' . __LINE__ . '</pre><pre>';
-                            var_dump($curl_response_res);
-                            die;
+                        if (strpos($str, '<h1>Created</h1>')) {
+                            $one->icon = 'img/' . $remoteFile;
                         }
-
-
-                        $one->icon = $remoteFile;
                     }
                 }
 
@@ -422,19 +388,17 @@ class DBPolls {
         $result = null;
 
         $ar = explode('base64', $encoded);
-       
-        
+
+
         if (count($ar) > 1) {
-            
-             if(isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] == 'Debug')
-             {
-                 echo '<pre>'.__FILE__.' -->>| <b> Line </b>'.__LINE__.'</pre><pre>';
-                 print_r($ar[count($ar)-1]);
-                 die;
-                 
-             }
-            
-            return $ar[count($ar)-1];
+
+            if (isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] == 'Debug') {
+                echo '<pre>' . __FILE__ . ' -->>| <b> Line </b>' . __LINE__ . '</pre><pre>';
+                print_r($ar[count($ar) - 1]);
+                die;
+            }
+
+            return $ar[count($ar) - 1];
         }
         return false;
     }
