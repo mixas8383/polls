@@ -305,7 +305,7 @@ class DBPolls {
                         if (curl_errno($ch)) {
                             $err = curl_error($ch);
                         }
-                        if (strpos($str, '<h1>Created</h1>')) {
+                        if (strpos($curl_response_res, '<h1>Created</h1>')) {
                             $one->icon = 'img/' . $remoteFile;
                         }
                     }

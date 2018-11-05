@@ -107,16 +107,11 @@
                   </p>
                 </mat-list-item>
 
-
-
                 <div style="margin-left: 10px">
                   <mat-form-field class="example-full-width" style="width: 500px;">
                     <textarea matInput placeholder="Description" formControlName="description" min="10"></textarea>
                   </mat-form-field>
                 </div>
-
-
-
 
               </mat-list>
               <mat-divider style="padding-bottom: 15px"></mat-divider>
@@ -177,7 +172,7 @@
                 <mat-divider style="padding-bottom: 15px"></mat-divider>
               </p>
               <p>
-                
+                <img *ngIf="currentEditCoin.controls.icon.value"  width="50px" height="50px" src="http://mcdn-dav.fortunejack.io/{{currentEditCoin.controls.icon.value}}" />
                   <input type="file" (change)="onFileChange($event)" />
                 
                 <mat-divider style="padding-bottom: 15px"></mat-divider>
@@ -221,7 +216,7 @@
               <mat-divider style="padding-bottom: 15px"></mat-divider>
             </div>
             <button mat-raised-button color="primary" (click)="addCoinLocale()">Add New Locale</button>
-            <button style="margin-left: 15px" mat-raised-button color="primary" (click)="displayCoinEdit=false;">Back to locale list</button>
+            <button style="margin-left: 15px" mat-raised-button color="primary" (click)="displayCoinEdit=false;">Back to Coins list</button>
           </div>
         </mat-tab>
       </mat-tab-group>
