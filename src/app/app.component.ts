@@ -124,10 +124,8 @@ export class DialogOverviewExampleDialog {
     this.editPollIndex = element;
     this.displayEdit = true;
     let locales = this.polls[element].locales;
-    console.log(Array.isArray(this.polls[element].locales[0]))
     let localesData = []
 
-    console.log(this.polls[element].locales)
     if (Array.isArray(this.polls[element].locales)) {
       for (let one of this.polls[element].locales) {
         localesData.push(this.fb.group(one));
@@ -152,8 +150,10 @@ export class DialogOverviewExampleDialog {
           } else {
             tempCoinLocales.push(this.fb.group(one.locales));
           }
+
           one.localesFormGroup = new FormArray(tempCoinLocales);
         }
+        one.file = '';
         coinsData.push(this.fb.group(one));
       }
     } else {
@@ -166,14 +166,26 @@ export class DialogOverviewExampleDialog {
     this.polls[element].localesFormgroup = new FormArray(localesData);
     this.polls[element].coinsFormgroup = new FormArray(coinsData);
 
+
+
     this.options = this.fb.group(this.polls[element]);
     this.coins = this.polls[element].coins;
-    console.log(this.coins)
+
+
+
+    this.options.controls.restrict_user.setValue((this.polls[element].restrict_user*1)?true:false);
+    this.options.controls.restrict_ip.setValue((this.polls[element].restrict_ip*1)?true:false);
+   
   }
 
   submitForm() {
     //console.log(this.options)
     console.log((this.options.value))
+    delete this.options.value['coins'];
+    delete this.options.value['locales'];
+
+
+
     this.setPolls(this.options.value);
   }
 
@@ -185,6 +197,7 @@ export class DialogOverviewExampleDialog {
     });
   }
  setPolls(data) {
+
     this.pollService.setPolls(data).subscribe(polls => {
       this.polls = polls;
       console.log(this.polls)
@@ -235,6 +248,8 @@ export class DialogOverviewExampleDialog {
       ordering: new FormControl(coin.ordering),
       current_price: new FormControl(coin.current_price),
       localesFormGroup:new FormArray([formGroupl]),
+      file:new FormControl(coin.file),
+      icon:new FormControl(coin.icon ),
     });
 
     this.pollCoins.push(formGroup)
@@ -252,4 +267,27 @@ export class DialogOverviewExampleDialog {
     this.currentEditCoin = this.pollCoins.controls[index];
     console.log(this.currentEditCoin);
   }
+  removeCoin(index)
+  {
+    this.pollCoins.removeAt(index);
+  
+  }
+  onFileChange(event)
+  {
+    const reader = new FileReader();
+ 
+    if(event.target.files && event.target.files.length) {
+      const [file] = event.target.files;
+      reader.readAsDataURL(file);
+ //reader.readAsBinaryString(file)
+      reader.onload = () => {
+        this.currentEditCoin.patchValue({
+          file: reader.result
+       });
+       console.log(this.currentEditCoin)
+        
+      };
+    }
+  }
+
 }

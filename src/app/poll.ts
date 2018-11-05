@@ -4,8 +4,8 @@ export class Poll {
     id: number;
     admin_title:string; 
     title: string;
-    restrict_user:boolean;
-    restrict_ip:boolean;
+    restrict_user:any;
+    restrict_ip:any;
     restrict_ip_limit:number;
     active:boolean;
     start_date:string;
@@ -33,6 +33,8 @@ export class Poll {
     current_price:string;
     ordering:number;
     poll_id:number;
+    file:any;
+    icon:string;
   }
   export class CoinLocale
   {

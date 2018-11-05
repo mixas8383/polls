@@ -14,10 +14,10 @@ const httpOptions = {
 @Injectable({ providedIn: 'root' })
 export class PollService {
 
-  // private heroesUrl = 'https://admin.fortunejack.io/fjadmin/data/utils.php?act=get_poll_votes&page=coin_primaries&task=get_all_polls';  // URL to web api
+  private heroesUrl = 'https://admin.fortunejack.io/fjadmin/data/utils.php?act=get_poll_votes&page=coin_primaries&task=get_all_polls';  // URL to web api
 
-  private heroesUrl = 'http://localhost/dashboard/get.php';  // URL to web api
-  private heroesUrlSet = 'http://localhost/dashboard/set.php';  // URL to web api
+  //private heroesUrl = 'http://localhost/dashboard/get.php';  // URL to web api
+  private heroesUrlSet = 'https://admin.fortunejack.io/fjadmin/data/utils.php?act=get_poll_votes&page=coin_primaries&task=save_poll';  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -36,12 +36,21 @@ export class PollService {
   setPolls(data): Observable<Poll[]> {
 
     console.log('service call');
-    return this.http.post<any>(this.heroesUrlSet, data)
+    return this.http.post<any>(this.heroesUrlSet, data,httpOptions)
       .pipe(
         tap(_ => this.log('fetched heroes')),
         catchError(this.handleError('getHeroes', []))
       );
   }
+//   postFile(fileToUpload: File): Observable<boolean> {
+//     const endpoint = 'your-destination-url';
+//     const formData: FormData = new FormData();
+//     formData.append('fileKey', fileToUpload, fileToUpload.name);
+//     return this.http
+//       .post(endpoint, formData, { headers: yourHeadersConfig })
+//       .map(() => { return true; })
+//       .catch((e) => this.handleError(e));
+// }
 
   /** GET hero by id. Return `undefined` when id not found */
   getHeroNo404<Data>(id: number): Observable<Poll> {
