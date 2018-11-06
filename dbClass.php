@@ -920,7 +920,7 @@ class Dbo {
                 $result[$field->Field] = $field;
             }
         }
-        return $result;
-    }
+        return $result; 
+    } 
 
 }

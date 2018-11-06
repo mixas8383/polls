@@ -7,7 +7,7 @@ export class Poll {
     restrict_user:any;
     restrict_ip:any;
     restrict_ip_limit:number;
-    active:boolean;
+    active:any;
     start_date:string;
     end_date:string;
     locales:any;
@@ -35,6 +35,7 @@ export class Poll {
     poll_id:number;
     file:any;
     icon:string;
+    locales:any;
   }
   export class CoinLocale
   {

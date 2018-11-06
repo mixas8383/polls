@@ -1,10 +1,12 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_SNACK_BAR_DEFAULT_OPTIONS, MatTableDataSource } from '@angular/material';
 import { PollService } from './poll.service';
 import { Poll, PollLocale, CoinLocale, PollCoin } from './poll';
 import { DataSource } from '@angular/cdk/collections';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { SnackBarOverview } from './app.snackbar';
+import { MessageService } from './message.service';
 
 
 export interface DialogData {
@@ -26,6 +28,7 @@ export class AppComponent {
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '80%',
+      height: '80%',
       data: { name: this.name, animal: this.animal }
     });
     const ttt = 52;
@@ -80,12 +83,14 @@ export const MY_FORMATS = {
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
 
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 10000 } }
   ],
 })
 export class DialogOverviewExampleDialog {
   polls: Poll[];
   displayedColumns: string[] = ['id', 'title', 'admin_title'];
-  displayedColumnsNew: string[] = ['id', 'title', 'description', 'admin_title', 'star'];
+  displayedColumnsNew: string[] = ['id', 'title', 'description', 'admin_title', 'star','star2'];
+  datasource = new MatTableDataSource(this.polls)
   displayEdit: boolean = false;
   displayCoinEdit: boolean = false;
   editPollIndex: number;
@@ -101,6 +106,8 @@ export class DialogOverviewExampleDialog {
     public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
     , private pollService: PollService
+    , private snackBar: SnackBarOverview
+    , private messageService: MessageService
     , private fb: FormBuilder) {
 
   }
@@ -121,6 +128,58 @@ export class DialogOverviewExampleDialog {
     return this.currentEditCoin.get('localesFormGroup') as FormArray;
   }
   editPoll(element) {
+
+    if (element === false) {
+
+      let newPoll = new Poll;
+
+      newPoll.admin_title = '';
+      newPoll.restrict_user = 0;
+      newPoll.restrict_ip = 0;
+      newPoll.restrict_ip_limit = 0;
+      newPoll.active = 0;
+      newPoll.start_date = '';
+      newPoll.end_date = '';
+
+
+      let newLocale = new PollLocale;
+      newLocale.title = '';
+      newLocale.description = '';
+      newLocale.locale_code = '';
+      newPoll.locales = [newLocale];
+
+
+      let newCoins = new PollCoin;
+      newCoins.short_title = ''
+      newCoins.icon = ''
+      newCoins.file = ''
+      newCoins.market_cap = ''
+      newCoins.ordering = 0;
+      newCoins.poll_id = 0;
+      newCoins.current_price = '';
+
+      let cnewCoinLang = new CoinLocale;
+      cnewCoinLang.title = '';
+      cnewCoinLang.description = '';
+      cnewCoinLang.locale_code = '';
+      cnewCoinLang.coin_id = 0;
+
+      newCoins.locales = [cnewCoinLang];
+
+
+
+      newPoll.coins = [newCoins];
+
+
+      this.polls.push(newPoll);
+
+
+
+      element = this.polls.length - 1;
+      console.log(this.polls);
+    }
+
+
     this.editPollIndex = element;
     this.displayEdit = true;
     let locales = this.polls[element].locales;
@@ -160,22 +219,13 @@ export class DialogOverviewExampleDialog {
       coinsData.push(this.fb.group(this.polls[element].coins));
     }
 
-
-
-
     this.polls[element].localesFormgroup = new FormArray(localesData);
     this.polls[element].coinsFormgroup = new FormArray(coinsData);
-
-
-
     this.options = this.fb.group(this.polls[element]);
     this.coins = this.polls[element].coins;
+    this.options.controls.restrict_user.setValue((this.polls[element].restrict_user * 1) ? true : false);
+    this.options.controls.restrict_ip.setValue((this.polls[element].restrict_ip * 1) ? true : false);
 
-
-
-    this.options.controls.restrict_user.setValue((this.polls[element].restrict_user*1)?true:false);
-    this.options.controls.restrict_ip.setValue((this.polls[element].restrict_ip*1)?true:false);
-   
   }
 
   submitForm() {
@@ -183,24 +233,31 @@ export class DialogOverviewExampleDialog {
     console.log((this.options.value))
     delete this.options.value['coins'];
     delete this.options.value['locales'];
-
-
-
     this.setPolls(this.options.value);
+    //snackBar
+
   }
 
 
   getPolls() {
-    this.pollService.getPolls().subscribe(polls => {
+    return this.pollService.getPolls().subscribe(polls => {
       this.polls = polls;
-      console.log(this.polls)
+      this.datasource.data=this.polls;
     });
   }
- setPolls(data) {
 
-    this.pollService.setPolls(data).subscribe(polls => {
-      this.polls = polls;
-      console.log(this.polls)
+  showPrimariesList() {
+
+    this.displayEdit = false;
+    this.displayCoinEdit = false;
+  }
+
+  setPolls(data) {
+
+    this.pollService.setPolls(data).subscribe(response => {
+      this.snackBar.openSnackBar(response['message'], 'Close');
+      this.getPolls();
+      this.showPrimariesList();
     });
   }
 
@@ -247,9 +304,9 @@ export class DialogOverviewExampleDialog {
       market_cap: new FormControl(coin.market_cap),
       ordering: new FormControl(coin.ordering),
       current_price: new FormControl(coin.current_price),
-      localesFormGroup:new FormArray([formGroupl]),
-      file:new FormControl(coin.file),
-      icon:new FormControl(coin.icon ),
+      localesFormGroup: new FormArray([formGroupl]),
+      file: new FormControl(coin.file),
+      icon: new FormControl(coin.icon),
     });
 
     this.pollCoins.push(formGroup)
@@ -262,30 +319,31 @@ export class DialogOverviewExampleDialog {
 
   editCoin(index) {
     this.displayCoinEdit = true;
-
-    console.log(this.pollCoins.controls[index])
     this.currentEditCoin = this.pollCoins.controls[index];
-    console.log(this.currentEditCoin);
   }
-  removeCoin(index)
-  {
+  removeCoin(index) {
     this.pollCoins.removeAt(index);
-  
+
   }
-  onFileChange(event)
+  removePoll(index)
   {
+    console.log(index)
+    console.log(this.polls)
+    this.polls.splice(index,1);
+    this.getPolls();
+  }
+  onFileChange(event) {
     const reader = new FileReader();
- 
-    if(event.target.files && event.target.files.length) {
+
+    if (event.target.files && event.target.files.length) {
       const [file] = event.target.files;
       reader.readAsDataURL(file);
- //reader.readAsBinaryString(file)
+      //reader.readAsBinaryString(file)
       reader.onload = () => {
         this.currentEditCoin.patchValue({
           file: reader.result
-       });
-       console.log(this.currentEditCoin)
-        
+        });
+
       };
     }
   }

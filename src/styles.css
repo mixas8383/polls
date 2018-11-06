@@ -45,3 +45,9 @@ mat-icon
 .example-full-width {
   width: 100%;
 }
+.bordered td.mat-cell
+{
+  border: 1px solid #C0C0C0;
+  padding: 5px !important;
+
+}
